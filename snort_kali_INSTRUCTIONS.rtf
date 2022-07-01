@@ -1,0 +1,67 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2638
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\margl1440\margr1440
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs22 \cf2 \up0 \nosupersub \ulnone INSTALL snort:\
+Step 1: Snapshot VM / Save State (just in case)\
+Step 2: \'91sudo cp /etc/apt/sources.list /etc/apt/sources.backup.list\'92\
+Step 3: \'91sudo nano /etc/apt/sources.list\'92 and add \'91deb http://deb.debian.org/debian buster main\'92 to a new line within the sources file\
+Step 4: \'91sudo apt update -y\'92\
+Step 5: \'91sudo apt install snort\'92\
+Step 6: input your ip subnet or interface into the configuration menu, ex: \'91192.168.56.0/24\'92 or \'91eth1\'92 and hit ok.\
+\
+\
+RULES: **\'92touch fullstack.rules\'92****then \'91sudo nano fullstack.rules\'92**\
+Rule 1: alert icmp any any -> any 1 (msg: \'93PINGPING\'94; sid: 1000003; rev:1;)\
+^^: Sends alert for ping, which is protocol ICMP and at port #1\
+\
+Rule 2: alert icmp any any -> any any (msg: "NMAP ping sweep Scan"; dsize:0; sid:10000004; rev: 1;)<^: *Should* send alert on a \'91nmap -sP\'92 scan, haven\'92t had luck so far\'85\
+\
+Rule 3: alert tcp any any -> 192.168.56.103 22 (msg: \'93NMAP TCP Scan\'94;sid:10000005; rev:2; )\
+^^: Sends alert for any basic TCP scan or \'91nmap -sT\'92\
+\
+Rule 4: alert tcp any any -> 192.168.56.103 22 (msg:\'93Nmap XMAS Tree Scan\'94; flags:FPU; sid:1000006; rev:1; )<^: Sends alert for the XMAS Tree Scan, \'91nmap -sX\'92\
+\
+Rule 5: alert tcp any any -> 192.168.56.103 22 (msg:\'93Nmap FIN Scan\'94; flags:F; sid:1000008; rev:1;)<^: Sends alert for FIN scan, \'91nmap -sF\'92\
+\
+Rule 6: alert tcp any any -> 192.168.56.103 22 (msg:\'93Nmap NULL Scan\'94; flags:0; sid:1000009; rev:1; )<^: Sends alert for NULL scan, \'91nmap -sN\'92\
+\
+Rule 7: alert udp any any -> 192.168.56.103 any ( msg:\'93Nmap UDP Scan\'94; sid:1000010; rev:1; )\
+^^: Sends alert for UDP scan, \'91nmap -sU\'92\
+\
+\
+snort VS CAPTURE:\
+**use Wireshark to capture your own .pcap file:\
+\'97-open up Wireshark by inputting \'91Wireshark\'92 into the !bash or terminal;\
+\'97-select eth* (* is whichever eth number that your target interface is on) and start capture;\
+\'97-ping, nmap, curl, etc.. to allow Wireshark to capture some traffic;\
+\'97-stop the capture, save as \'91captured.pcap\'92 or whatever you want to name it;\
+\'97-use \'91snort -k none -l ./logs/ -c ./fullstack.rules -r ./captured.pcap\'92 to capture the traffic/type/commands used/flags within snort.\
+\
+\
+OUTPUT snort:\
+*Use \'91sudo snort -A console -q -c ./fullstack.rules -i eth1 -K ascii\'92 in the command line, wait, and snort outputs any traffic that was captured via rules and will send the \'91alerts\'92 to you accordingly whilst logging these alerts.\
+\
+\
+\
+\
+\
+\
+SOURCES (thank you):\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://bin3xish477.medium.com/installing-snort-on-kali-linux-9c96f3ab2910"}}{\fldrslt \cf2 \ul \ulc2 https://bin3xish477.medium.com/installing-snort-on-kali-linux-9c96f3ab2910}}\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://truica-victor.com/snort-rules-basic-understanding/"}}{\fldrslt \cf2 \ul \ulc2 https://truica-victor.com/snort-rules-basic-understanding/}}\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://thecybersecurityman.com/2018/03/19/what-is-snort-bonus-how-to-write-snort-rules/"}}{\fldrslt \cf2 \ul \ulc2 https://thecybersecurityman.com/2018/03/19/what-is-snort-bonus-how-to-write-snort-rules/}}\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://resources.infosecinstitute.com/topic/snort-rules-workshop-part-one/"}}{\fldrslt \cf2 \ul \ulc2 https://resources.infosecinstitute.com/topic/snort-rules-workshop-part-one/}}\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://frankfu.click/security/ids/how-to-detect-nmap-scan-using-snort/"}}{\fldrslt \cf2 \ul \ulc2 https://frankfu.click/security/ids/how-to-detect-nmap-scan-using-snort/}}\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://nmap.org/book/man-port-scanning-techniques.html"}}{\fldrslt \cf2 \ul \ulc2 https://nmap.org/book/man-port-scanning-techniques.html}}\
+https://linuxhint.com/stealth_scans_nmap/}
